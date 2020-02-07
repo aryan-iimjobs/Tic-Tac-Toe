@@ -131,14 +131,11 @@ class ViewController: UIViewController {
             if(notOrCross == "cross") {
                 touchedBoxesArray[touchedBoxIndex] = "not"
                 notOrCross = "not"
-                //button\().setImage(<#T##image: UIImage?##UIImage?#>, for: UIControl.State)
-                
                 setImage(touchedBoxIndex, "Nought.png")
                 
             } else {
                 touchedBoxesArray[touchedBoxIndex] = "cross"
                 notOrCross = "cross"
-                
                 setImage(touchedBoxIndex, "Cross.png")
             }
             print("Box \(touchedBoxIndex) is \(touchedBoxesArray[touchedBoxIndex])")
