@@ -10,7 +10,12 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var grid: UIImageView!
+    var grid: UIImageView!
+    
+    let lineWidth: Int = 1
+    
+    let screenWidth  = Int(UIScreen.main.bounds.width)
+    let screenHeight = Int(UIScreen.main.bounds.height)
     
     var touchedBox: String = "noTouch"
     var touchedBoxesArray = ["noTouch", "noTouch", "noTouch",
@@ -23,27 +28,29 @@ class ViewController: UIViewController {
     
     func drawLines() {
         
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 374, height: 374))
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: screenWidth, height: screenWidth))
 
         let img = renderer.image { ctx in
             
+            let screenWidthOneThird: Int = screenWidth / 3
+            
             // Verticle line 0
-            ctx.cgContext.move(to: CGPoint(x: 124.0, y: 0.0))
-            ctx.cgContext.addLine(to: CGPoint(x: 124, y: 374))
+            ctx.cgContext.move(to: CGPoint(x: screenWidthOneThird, y: 0))
+            ctx.cgContext.addLine(to: CGPoint(x: screenWidthOneThird, y: screenWidth))
             
             // Verticle line 1
-            ctx.cgContext.move(to: CGPoint(x: 248.0, y: 0.0))
-            ctx.cgContext.addLine(to: CGPoint(x: 248, y: 374))
+            ctx.cgContext.move(to: CGPoint(x: screenWidthOneThird * 2, y: 0))
+            ctx.cgContext.addLine(to: CGPoint(x: screenWidthOneThird * 2, y: screenWidth))
                 
             // Horizontal line 0
-            ctx.cgContext.move(to: CGPoint(x: 0.0, y: 124.0))
-            ctx.cgContext.addLine(to: CGPoint(x: 374, y: 124))
+            ctx.cgContext.move(to: CGPoint(x: 0, y: screenWidthOneThird))
+            ctx.cgContext.addLine(to: CGPoint(x: screenWidth, y: screenWidthOneThird))
             
             // Horizontat line 1
-            ctx.cgContext.move(to: CGPoint(x: 0.0, y: 248.0))
-            ctx.cgContext.addLine(to: CGPoint(x: 374, y: 248))
+            ctx.cgContext.move(to: CGPoint(x: 0, y: screenWidthOneThird * 2))
+            ctx.cgContext.addLine(to: CGPoint(x: screenWidth, y: screenWidthOneThird * 2))
             
-            ctx.cgContext.setLineWidth(2)
+            ctx.cgContext.setLineWidth(CGFloat(lineWidth))
             ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
 
             ctx.cgContext.strokePath()
@@ -55,31 +62,33 @@ class ViewController: UIViewController {
     func cordToBoxIndex(_ xCord: Int, _ yCord: Int) -> Int {
         var touchedBoxIndex: Int = -1
         
-        if(xCord <= 124 && yCord <= 124) {
+        let screenWidthOneThird: Int = screenWidth / 3
+        
+        if(xCord <= screenWidthOneThird && yCord <= screenWidthOneThird) {
             touchedBoxIndex = 0
             touchedBox = "0"
-        } else if(xCord > 124 && xCord <= 248 && yCord <= 124) {
+        } else if(xCord > screenWidthOneThird && xCord <= screenWidthOneThird * 2 && yCord <= screenWidthOneThird) {
             touchedBoxIndex = 1
             touchedBox = "1"
-        } else if(xCord > 248 && yCord <= 124) {
+        } else if(xCord > screenWidthOneThird * 2 && yCord <= screenWidthOneThird) {
             touchedBoxIndex = 2
             touchedBox = "2"
-        } else if(xCord < 124 && yCord > 128 && yCord <= 248) {
+        } else if(xCord < screenWidthOneThird && yCord > screenWidthOneThird && yCord <= screenWidthOneThird * 2) {
             touchedBoxIndex = 3
             touchedBox = "3"
-        } else if(xCord > 124 && xCord < 248 && yCord > 128 && yCord <= 248) {
+        } else if(xCord > screenWidthOneThird && xCord < screenWidthOneThird * 2 && yCord > screenWidthOneThird && yCord <= screenWidthOneThird * 2) {
             touchedBoxIndex = 4
             touchedBox = "4"
-        } else if(xCord > 248 && yCord > 128 && yCord > 128 && yCord <= 248) {
+        } else if(xCord > screenWidthOneThird * 2 && yCord > screenWidthOneThird && yCord > screenWidthOneThird && yCord <= screenWidthOneThird * 2) {
             touchedBoxIndex = 5
             touchedBox = "5"
-        } else if(xCord < 124 && yCord > 248) {
+        } else if(xCord < screenWidthOneThird && yCord > screenWidthOneThird * 2) {
             touchedBoxIndex = 6
             touchedBox = "6"
-        } else if(xCord > 124 && xCord <= 248 && yCord > 248) {
+        } else if(xCord > screenWidthOneThird && xCord <= screenWidthOneThird * 2 && yCord > screenWidthOneThird * 2) {
             touchedBoxIndex = 7
             touchedBox = "7"
-        } else if(xCord > 248 && yCord > 248) {
+        } else if(xCord > screenWidthOneThird * 2 && yCord > screenWidthOneThird * 2) {
             touchedBoxIndex = 8
             touchedBox = "8"
         }
@@ -103,23 +112,21 @@ class ViewController: UIViewController {
     }
     
     func addImage(_ x: Int,_ y: Int,_ name: String) {
-        let imageV = UIImageView(frame: CGRect(x: x, y: y, width: 120, height: 120))
-        //imageV.center = view.center
-        imageV.layer.cornerRadius = 10
+        let imageV = UIImageView(frame: CGRect(x: x, y: y, width: (screenWidth / 3) - (lineWidth * 2), height: (screenWidth / 3) - (lineWidth * 2)))
         imageV.clipsToBounds = true
-        imageV.layer.borderWidth = 2.0
-        imageV.layer.borderColor = UIColor.red.cgColor
         imageV.image = UIImage(named: name, in: Bundle(for: type(of: self)), compatibleWith: nil)
-        view.addSubview(imageV)
+        grid.addSubview(imageV)
     }
     
     func setImage(_ cord: Int, _ name: String) {
+        let screenWidthOneThird: Int = screenWidth / 3
+        
         if(cord < 3) {
-            addImage(20 + (124 * cord), 0 + 273, name)
+            addImage((screenWidthOneThird * cord) + lineWidth, 0 + lineWidth, name)
         } else if(cord < 6) {
-            addImage(20 + (124 * (cord - 3)), 124 + 273, name)
+            addImage(((screenWidthOneThird * (cord - 3)) + lineWidth), screenWidthOneThird + lineWidth, name)
         } else {
-            addImage(20 + (124 * (cord - 6)), 248 + 273, name)
+            addImage(((screenWidthOneThird * (cord - 6)) + lineWidth), (screenWidthOneThird * 2) + lineWidth, name)
         }
     }
     
@@ -153,9 +160,18 @@ class ViewController: UIViewController {
         }
     }
     
+    func addCanvas() {
+        grid = UIImageView(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenWidth))
+        grid.clipsToBounds = true
+        view.addSubview(grid)
+        
+        grid.center = view.center
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(self.grid.frame.origin.y)
+        
+        addCanvas() // Add image for drawing area
         drawLines() // Draw grid
     }
     
